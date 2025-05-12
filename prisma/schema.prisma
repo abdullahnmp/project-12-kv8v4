@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model Post {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String?
+  published Boolean  @default(false)
+}
+
+
+
+model Event {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  name               String   
+  slug               String   @unique
+  recommend          Boolean  @default(false)
+  startDate          DateTime
+  startTime          String?
+  mainImage          String?
+  imageZapierLink    String?
+  venueAddress       String?
+  venueNameFrontEnd  String?
+  venueNameBackEnd   String?
+  city               String?
+  bali               Boolean  @default(false)
+  neighborhood       String?
+  lineUp             String[]  // Array of Strings
+  genres             String[]  // Array of Strings
+  details            String?
+  minAge             Int?      // Should be an Integer
+  cost               Float?    // Should be a Float if numeric
+  promoterMail       String?  
+  websiteUrl         String?
+  ticketLink         String?
+  videoLink          String?
+  recurring          String?
+  currency           String?
+  eventsMap          String?
+  catchVenues        String[]  // Array of Strings
+  socialFbLink       String?
+  socialTwLink       String?
+  socialWtLink       String?
+  socialOtherLink    String?
+  meta               String?  
+  venue              String?   
+  guestlist          Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+
