@@ -1,52 +1,49 @@
 "use server";
 
 import { v2 as cloudinary } from "cloudinary";
-import { promises as fs } from "fs";
-import { join } from "path";
-import os from "os";
 
-// Cloudinary configuration
+// Cloudinary config
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
-  api_key: process.env.CLOUDINARY_API_KEY!,
-  api_secret: process.env.CLOUDINARY_API_SECRET!,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export type CloudinaryResponse = {
-  success: boolean;
-  url?: string;
-  message?: string;
-};
+export async function uploadImage(formData: any) {
+  const file = formData.get("file");
 
-export async function uploadImage(formData: FormData): Promise<CloudinaryResponse> {
-  const file = formData.get("file") as File | null;
-  if (!file) {
-    return { success: false, message: "File not found" };
+  // ✅ Check if file is actually a File instance
+  if (!(file instanceof File)) {
+    return { success: false, message: "Invalid file" };
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  // ✅ OS-agnostic temp directory
-  const tmpDir = join(os.tmpdir(), "uploads");
-  await fs.mkdir(tmpDir, { recursive: true });
-
-  const filePath = join(tmpDir, file.name);
-  await fs.writeFile(filePath, buffer);
-
   try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: "events",
-      resource_type: "image",
-      timeout: 15000, // 15 seconds timeout for slow networks
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "events",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error || !result) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+
+      stream.end(buffer);
     });
 
-    return { success: true, url: result.secure_url };
+    const res = result as any;
+
+    return { success: true, url: res.secure_url };
   } catch (error: any) {
     console.error("Upload failed:", error);
     return { success: false, message: `File upload failed: ${error.message || error}` };
-  } finally {
-    // Clean up the temp file after the upload attempt
-    await fs.unlink(filePath).catch(err => console.error("Temp file cleanup failed:", err));
   }
 }

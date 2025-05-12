@@ -1,9 +1,7 @@
-// components/CloudinaryUpload.tsx
 "use client";
 
-import React, { useState, startTransition } from "react";
-import { useActionState } from "react";
-import { CloudinaryResponse, uploadImage } from "@/utils/server-actions";
+import React, { useState } from "react";
+import { uploadImage } from "@/utils/server-actions";
 
 interface CloudinaryUploadProps {
   value?: string;
@@ -13,65 +11,44 @@ interface CloudinaryUploadProps {
 export default function CloudinaryUpload({ value, onChange }: CloudinaryUploadProps) {
   const [preview, setPreview] = useState<string | null>(value || null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  // Server Action for uploading
-  const uploadWithFormData = async (prevState: any, formData: FormData) => {
-    setIsUploading(true); // Start the uploading state before the form action
+  const uploadFile = async (file: File) => {
+    const data = new FormData();
+    data.append("file", file);
+
+    setIsUploading(true);
+    setError("");
 
     try {
-      const result = await uploadImage(formData);
+      const result = await uploadImage(data);
 
       if (result.success && result.url) {
         setPreview(result.url);
         onChange(result.url);
+      } else {
+        setError(result.message || "Upload failed");
       }
-
-      return result;
-    } catch (error) {
-      return { success: false, message: "File upload failed" };
+    } catch (err) {
+      setError("Something went wrong");
     } finally {
       setIsUploading(false);
     }
   };
 
-  const [state, formAction] = useActionState(uploadWithFormData, {
-    success: false,
-    message: "",
-    url: "",
-  });
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    const data = new FormData();
-    data.append("file", file);
-
-    // Set uploading state before startTransition
-    setIsUploading(true);
-
-    // Wrap formAction inside startTransition to prevent blocking UI
-    startTransition(() => {
-      formAction(data);
-    });
+    if (file) {
+      uploadFile(file);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-
     const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    const data = new FormData();
-    data.append("file", file);
-
-    // Set uploading state before startTransition
-    setIsUploading(true);
-
-    // Wrap formAction inside startTransition to prevent blocking UI
-    startTransition(() => {
-      formAction(data);
-    });
+    if (file) {
+      uploadFile(file);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -87,7 +64,6 @@ export default function CloudinaryUpload({ value, onChange }: CloudinaryUploadPr
     <div className="mb-4">
       <label className="block mb-2">Main Image</label>
 
-      {/* Drag & Drop Area */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -110,7 +86,6 @@ export default function CloudinaryUpload({ value, onChange }: CloudinaryUploadPr
           <>
             <p>Uploading...</p>
             <div className="mt-3 flex justify-center">
-              {/* Loading Spinner */}
               <div className="w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
             </div>
           </>
@@ -136,11 +111,8 @@ export default function CloudinaryUpload({ value, onChange }: CloudinaryUploadPr
         )}
       </div>
 
-      {/* Hidden Input for Form Submission */}
       <input type="hidden" name="mainImage" value={preview || ""} />
-
-      {/* Error Message */}
-      {state.message && <p className="text-red-400 mt-2">{state.message}</p>}
+      {error && <p className="text-red-400 mt-2">{error}</p>}
     </div>
   );
 }
