@@ -168,7 +168,7 @@ export async function uploadImage(formData: FormData) {
         folder: "events", // optional folder
         resource_type: "image",
       },
-      (error: string, result: string) => {
+      (error, result) => {
         if (error) {
           reject(error);
         }
