@@ -97,7 +97,7 @@ export async function deletePost(id: string) {
 
 
 
-export async function createEvent(data: IEvent) {
+export async function createEvent(data:any) {
   try {
     const newEvent = await prisma.event.create({
       data: {
@@ -117,7 +117,7 @@ export async function createEvent(data: IEvent) {
   }
 }
 
-export async function updateEvent(id: string, data: IEvent) {
+export async function updateEvent(id: string, data: any) {
   try {
     const updatedEvent = await prisma.event.update({
       where: { id },
