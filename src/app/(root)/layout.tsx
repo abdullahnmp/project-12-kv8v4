@@ -32,8 +32,8 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <QueryProvider>
-              <div className="flex gap-10 h-screen">
-                <div>
+              <div className="flex gap-10 h-screen w-full">
+                <div >
                   <SideBar />
                 </div>
                 <div className="w-full mr-8 flex-1 overflow-y-auto">{children}</div>

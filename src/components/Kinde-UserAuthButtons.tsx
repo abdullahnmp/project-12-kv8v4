@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  RegisterLink,
-  LoginLink,
   LogoutLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
@@ -39,9 +37,6 @@ export const KindeUserAuthButtons = () => {
     return <div>loading...</div>;
   }
 
-  if (!isAuthenticated) {
-    return <AuthenticationComponent />;
-  }
 
   return <UserDetails user={user as UserData} />;
 };
@@ -76,12 +71,3 @@ const UserDetails = ({ user }: { user: UserData }) => {
   );
 };
 
-const AuthenticationComponent = () => {
-  return (
-    <div>
-      <LoginLink>Sign in</LoginLink>
-      <br />
-      <RegisterLink>Sign up</RegisterLink>
-    </div>
-  );
-};

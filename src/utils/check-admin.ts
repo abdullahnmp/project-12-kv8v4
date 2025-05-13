@@ -8,7 +8,7 @@ export async function checkAdminAccess() {
 
   const authenticated = await isAuthenticated();
   if (!authenticated) {
-    redirect("/auth"); // or login
+    redirect("/"); // or login
   }
 
   const isAdmin = await getPermission("admin");

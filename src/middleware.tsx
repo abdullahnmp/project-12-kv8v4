@@ -1,51 +1,41 @@
-// middleware.ts
 import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-export function middleware(req: NextRequest) {
-  // Just check if user is authenticated, not their role
-  return withAuth(req);
-}
+export default withAuth(
+  async function middleware(req: any) {
+
+    const { token } = req.kindeAuth || {};
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth', req.url));
+    }
+
+    const hasAdminPermission = token.permissions?.includes("admin");
+    if (!hasAdminPermission) {
+      return NextResponse.redirect(new URL('/unauthorized', req.url));
+    }
+
+    return NextResponse.next();
+  },
+  {
+    isReturnToCurrentPage: true, // After login, return back to the same page
+    loginPage: "/auth",
+    publicPaths: [
+      "/auth",
+      "/unauthorized",
+      "/api/login",
+      "/api/register"
+    ]
+  }
+);
+
+
 
 export const config = {
   matcher: [
-    "/((?!_next|auth|unauthorized|api|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!auth|api/auth/login|api/auth/register|api/auth/logout|unauthorized).*)",
   ],
 };
 
 
 
 
-
-
-
-
-
-
-// // middleware.ts
-// import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
-// import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-// import { NextRequest, NextResponse } from "next/server";
-
-// export default async function middleware(req: NextRequest) {
-//   const { getPermission, isAuthenticated, } = getKindeServerSession();
-  
-//   const isUserAuthenticated = await isAuthenticated();
-//   if (isUserAuthenticated) {
-//     const isAdmin = await getPermission("admin");
-//     if (!isAdmin?.isGranted) {
-//         console.log(`this is admin check`, isAdmin)
-//       const unauthorizedUrl = new URL("/unauthorized", req.url);
-//       return NextResponse.redirect(unauthorizedUrl);
-//     }
-//   }
-
-//   // Proceed if admin
-//   return withAuth(req);
-// }
-
-// export const config = {
-//   matcher: [
-//     "/((?!_next|auth|unauthorized|api|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-//   ],
-// };

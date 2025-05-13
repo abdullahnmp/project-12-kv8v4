@@ -68,3 +68,35 @@ export  interface EventFormProps {
   isDuplicate?: boolean;
 }
   
+
+
+
+
+
+
+export interface IGuestlist {
+  id?: string | undefined;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  numberOfGuests: number;
+  termsAccepted: boolean;
+  submittedBy: 'admin' | 'user';
+  createdAt?: Date;
+  updatedAt?: Date;
+  startDate: Date;
+  // Optional references (uncomment if used in schema)
+  // event?: string; // ObjectId as string
+  // venue?: string; // ObjectId as string
+}
+
+
+
+export interface IHero {
+  title: string;
+  subTitle?: string;
+  image: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  slug: "unique-hero-id";
+}

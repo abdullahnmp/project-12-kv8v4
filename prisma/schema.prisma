@@ -56,3 +56,38 @@ model Event {
 }
 
 
+
+
+
+
+
+
+model Guestlist {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  fullName       String   
+  email          String   
+  phoneNumber    String
+  numberOfGuests Int      @default(1)
+  termsAccepted  Boolean
+  submittedBy    SubmittedBy
+  startDate      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum SubmittedBy {
+  admin
+  user
+}
+
+
+
+model Hero {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String   @db.String
+  subTitle  String?  @db.String
+  image     String   @db.String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  slug      String   @db.String @unique 
+}

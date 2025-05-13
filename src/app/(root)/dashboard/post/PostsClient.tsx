@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "@/utils/actions";
 import { IPost } from "@/types/allTypes";
-import Skeleton from "./skeleton";
+import Skeleton from "./loading";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import PostManager from "./PostManager";
 import PostForm from "./PostForm";
@@ -25,7 +25,7 @@ export default function PostsClient() {
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <Skeleton/>;
 
   if (error)
     return (

@@ -2,27 +2,27 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEvents } from "@/utils/actions";
-import { IEvent } from "@/types/allTypes";
+import { fetchGuestlist } from "@/utils/actions";
+import { IGuestlist } from "@/types/allTypes";
 import Skeleton from "./loading";
 import DeleteConfirmModal from "./DeleteConfirmModal";
-import EventManager from "./EventManager";
-import EventForm from "./EventForm";
+import Manager from "./Manager";
+import GuestlistForm from "./Form";
 
-export default function PostsClient() {
+export default function GuestlistClient() {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["events"],
-    queryFn: fetchEvents,
+    queryKey: ["guestlist"],
+    queryFn: fetchGuestlist,
   });
 
-  const [editingPost, setEditingPost] = useState<IEvent | null>(null);
-  const [duplicatingPost, setDuplicatingPost] = useState<IEvent | null>(null);
+  const [editingPost, setEditingPost] = useState<IGuestlist | null>(null);
+  const [duplicatingPost, setDuplicatingPost] = useState<IGuestlist | null>(null);
   const [deletingPostId, setDeletingPostId] = useState<string | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter posts based on search term
-  const filteredPosts = data?.filter((event: IEvent) =>
-    event.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPosts = data?.filter((event: IGuestlist) =>
+    event.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) return <Skeleton />;
@@ -37,31 +37,35 @@ export default function PostsClient() {
   return (
     <div className="flex flex-col h-screen">
       {/* Post Search & Create */}
-      <EventManager onSearch={setSearchTerm} />
+      <Manager onSearch={setSearchTerm} />
 
       {/* Post List */}
       <div className="w-full p-6 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 mt-6">
         <table className="w-full border-collapse text-white">
           <thead>
             <tr className="border-b border-white/30">
-              <th className="p-3 text-left">ID</th>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Details</th>
+              <th className="p-3 text-left">Full Name</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Contact Number</th>
+              <th className="p-3 text-left">Number of Guest(s)</th>
+              <th className="p-3 text-left">Form submitted by</th>
               <th className="p-3 text-left">Start Date</th>
               <th className="p-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPosts?.map((event: IEvent) => (
+            {filteredPosts?.map((event: IGuestlist) => (
               <tr
-                key={event.id}
+                key={event.email}
                 className="border-b border-white/20 hover:bg-white/20 transition"
               >
-                <td className="p-2">{event.id}</td>
-                <td className="p-2">{event.name}</td>
-                <td className="p-2">{event.details}</td>
+                <td className="p-2">{event.fullName}</td>
+                <td className="p-2">{event.email}</td>
+                <td className="p-2">{event.phoneNumber}</td>
+                <td className="p-2">{event.numberOfGuests}</td>
+                <td className="p-2">{event.submittedBy}</td>
                 <td className="p-2">
-                  {new Date(event.startDate).toLocaleString()}
+                {event.createdAt ? new Date(event.createdAt).toLocaleString() : "No date available"}
                 </td>
                 <td className="p-2 flex gap-2">
                   <button
@@ -90,11 +94,11 @@ export default function PostsClient() {
       </div>
 
       {editingPost && (
-        <EventForm event={editingPost} onClose={() => setEditingPost(null)} />
+        <GuestlistForm data={editingPost} onClose={() => setEditingPost(null)} />
       )}
       {duplicatingPost && (
-        <EventForm
-          event={{ ...duplicatingPost, id: "" }}
+        <GuestlistForm
+          data={{ ...duplicatingPost, id: "" }}
           onClose={() => setDuplicatingPost(null)}
           isDuplicate={true}
         />
