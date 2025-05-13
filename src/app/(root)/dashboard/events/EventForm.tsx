@@ -110,6 +110,15 @@ export default function EventForm({ event, onClose, isDuplicate = false }: Event
           onChange={handleChange}
           placeholder="Event Title"
         />
+        
+        {/* recommend */}
+        <CheckboxField
+          label="Recommend"
+          name="recommend"
+          checked={formData.recommend}
+          onChange={handleChange}
+        />
+        
 
         {/* Slug */}
         <InputField
@@ -187,7 +196,7 @@ export default function EventForm({ event, onClose, isDuplicate = false }: Event
 
         {/* City */}
         <InputField
-          label="শহর"
+          label="City"
           name="city"
           value={formData.city}
           onChange={handleChange}
