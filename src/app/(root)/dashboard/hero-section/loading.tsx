@@ -1,6 +1,4 @@
-import Skeleton from "@/components/skeleton";
-
+import Skeleton from "../../../../components/Skeleton";
 export default function Loading() {
-  return <Skeleton label="Hero Section Manager"/>
+  return <Skeleton label="Hero Section Manager" />;
 }
-

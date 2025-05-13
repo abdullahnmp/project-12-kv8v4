@@ -1,6 +1,5 @@
-import Skeleton from "@/components/skeleton";
+import Skeleton from "../../../../components/Skeleton";
 
 export default function Loading() {
-  return <Skeleton label="Guestlist Loading"/>
+  return <Skeleton label="Guestlist Loading" />;
 }
-
